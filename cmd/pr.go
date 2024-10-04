@@ -16,24 +16,46 @@ var prCmd = &cobra.Command{
 	Short: "Creates pull request",
 	Long: `Create a pull request with custom template`,
 	Run: func(cmd *cobra.Command, args []string){
-		cwd,err := os.Getwd()
-		if err != nil {
-			fmt.Println("error", err)
+		cwd,cwdErr := os.Getwd()
+		if cwdErr != nil {
+			fmt.Println("error", cwdErr)
 		}
 
 		fmt.Println(cwd)
 		os.Chdir(cwd)
 		
 		gs := exec.Command("git", "status")
-		gsOutput,_ := gs.Output()
+		gsOutput,gsErr := gs.Output()
+		if gsErr != nil {
+			fmt.Println("error",gsErr)
+		}
 		fmt.Println(string(gsOutput))
 
 		ga := exec.Command("git", "add", "-A")
-		gaOutput,_ := ga.Output()
+		gaOutput,gaErr := ga.Output()
+		if gaErr != nil {
+			fmt.Println("error",gaErr)
+		}
 		fmt.Println(string(gaOutput))
+
+		var commitMsg string 
+		fmt.Scanln(&commitMsg)
+
+		gc := exec.Command("git", "commit", "-m",commitMsg)
+		gcOutput,gcErr := gc.Output()
+		if gcErr != nil {
+			fmt.Println("error",gcErr)
+		}
+		fmt.Println(string(gcOutput))
 		
 		var title string 
 		fmt.Scanln(&title)
+
+		var base string 
+		fmt.Scanln(&base)
+
+		var feat string 
+		fmt.Scanln(&feat)
 
 		body := `
 		## Description
@@ -76,8 +98,8 @@ var prCmd = &cobra.Command{
 		<!-- If your PR includes visual changes, include screenshots here. -->
 	`
 
-	gp := exec.Command("gh", "pr", "create", "--base", baseBranch, "--head", featBranch, "--title", title, "--body", body)
-		gaOutput,_ := ga.Output()
-		fmt.Println(string(gaOutput))
+		gp := exec.Command("gh", "pr", "create", "--base", base, "--head", feat, "--title", title, "--body", body)
+		gpOutput,_ := gp.Output()
+		fmt.Println(string(gpOutput))
 	},
 }
