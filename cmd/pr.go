@@ -57,9 +57,9 @@ var prCmd = &cobra.Command{
 			return
 		}
 
-		var title string 
-		var base string 
-		var feat string 
+		var title string
+		var base string
+		var feat string
 
 		fmt.Println("Enter pr title:")
 		fmt.Scanf("%s",&title)
