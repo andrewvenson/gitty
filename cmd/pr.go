@@ -41,9 +41,9 @@ var prCmd = &cobra.Command{
 
 		var commitMsg string 
 		fmt.Println("Enter commit message:")
-		fmt.Scanf("%s",&commitMsg)
+		fmt.Scanf("%s", &commitMsg)
 
-		gc := exec.Command("git", "commit", "-m",commitMsg)
+		gc := exec.Command("git", "commit", "-m", "'"+commitMsg+"'")
 		_,gcErr := gc.Output()
 		if gcErr != nil {
 			fmt.Println("error",gcErr)
