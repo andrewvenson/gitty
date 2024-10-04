@@ -111,13 +111,30 @@ var prCmd = &cobra.Command{
 		<!-- If your PR includes visual changes, include screenshots here. -->
 	`
 
-		gp := exec.Command("gh", "pr", "create", "--base", base, "--head", feat, "--title", title, "--body", body)
-		gpOutput,gpErr := gp.Output()
-		if gpErr != nil {
-			fmt.Println("error on pr creation", gpErr)
-			fmt.Println("error on pr creation", gpOutput)
+		// Create a temporary file to store the PR body
+		file, err := os.CreateTemp("", "pr_body_*.md")
+		if err != nil {
+			fmt.Println("Error creating temporary file:", err)
 			return
 		}
-		fmt.Println(string(gpOutput))
+		defer os.Remove(file.Name()) // Clean up the file after
+
+		_, err = file.WriteString(body)
+		if err != nil {
+			fmt.Println("Error writing to file:", err)
+			return
+		}
+		file.Close()
+
+		// Pass the body as a file to the gh command
+		gp := exec.Command("gh", "pr", "create", "--base", base, "--head", feat, "--title", title, "--body-file", file.Name())
+		gp.Stderr = os.Stderr
+		gp.Stdout = os.Stdout
+		gpErr := gp.Run()
+
+		if gpErr != nil {
+			fmt.Println("Error on PR creation:", gpErr)
+			return
+		}
 	},
 }
