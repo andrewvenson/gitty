@@ -42,39 +42,33 @@ var prCmd = &cobra.Command{
 		var commitMsg string 
 		fmt.Println("Enter commit message:")
 		fmt.Scanln(&commitMsg)
-		fmt.Scanln("\n")
 
 		gc := exec.Command("git", "commit", "-m",commitMsg)
-		gcOutput,gcErr := gc.Output()
+		_,gcErr := gc.Output()
 		if gcErr != nil {
 			fmt.Println("error",gcErr)
 			return
 		}
-		fmt.Println(string(gcOutput))
 
 		gpush := exec.Command("git", "push")
-		gpushOutput,gpushErr := gpush.Output()
+		_,gpushErr := gpush.Output()
 		if gpushErr != nil {
 			fmt.Println("error",gpushErr)
 			return
 		}
-		fmt.Println(string(gpushOutput))
-		
+
 		var title string 
 		var base string 
 		var feat string 
 
 		fmt.Println("Enter pr title:")
 		fmt.Scanln(&title)
-		fmt.Scanln("\n")
 
 		fmt.Println("Enter base branch to pull pr into:")
 		fmt.Scanln(&base)
-		fmt.Scanln("\n")
 
 		fmt.Println("Enter feat branch name to pull pr into:")
 		fmt.Scanln(&feat)
-		fmt.Scanln("\n")
 
 		body := `
 		## Description
