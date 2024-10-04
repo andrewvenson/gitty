@@ -18,29 +18,27 @@ var prCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string){
 		cwd,cwdErr := os.Getwd()
 		if cwdErr != nil {
-			fmt.Println("error", cwdErr)
+			fmt.Printf("error", cwdErr)
 			return
 		}
-
-		fmt.Println(cwd)
 		os.Chdir(cwd)
 		
 		gs := exec.Command("git", "status")
 		_,gsErr := gs.Output()
 		if gsErr != nil {
-			fmt.Println("error",gsErr)
+			fmt.Printf("error",gsErr)
 			return
 		}
 
 		ga := exec.Command("git", "add", "-A")
 		_,gaErr := ga.Output()
 		if gaErr != nil {
-			fmt.Println("error",gaErr)
+			fmt.Printf("error",gaErr)
 			return
 		}
 
 		var commitMsg string 
-		fmt.Println("Enter commit message:")
+		fmt.Printf("Enter commit message:\n")
 		fmt.Scanf("%s", &commitMsg)
 
 		gc := exec.Command("git", "commit", "-m", "'"+commitMsg+"'")
@@ -48,14 +46,14 @@ var prCmd = &cobra.Command{
 		gc.Stdout = os.Stdout
 		gcErr := gc.Run()
 		if gcErr != nil {
-			fmt.Println("error",gcErr)
+			fmt.Printf("error",gcErr)
 			return
 		}
 
 		gpush := exec.Command("git", "push")
 		_,gpushErr := gpush.Output()
 		if gpushErr != nil {
-			fmt.Println("error",gpushErr)
+			fmt.Printf("error",gpushErr)
 			return
 		}
 
@@ -63,14 +61,14 @@ var prCmd = &cobra.Command{
 		var base string
 		var feat string
 
-		fmt.Println("Enter pr title:")
-		fmt.Scanf("%s",&title)
+		fmt.Printf("Enter pr title: ")
+		fmt.Scanf("%s\n",&title)
 
-		fmt.Println("Enter base branch to pull pr into:")
-		fmt.Scanf("%s",&base)
+		fmt.Printf("Enter base branch to pull pr into: ")
+		fmt.Scanf("%s\n",&base)
 
-		fmt.Println("Enter feat branch name to pull pr into:")
-		fmt.Scanf("%s",&feat)
+		fmt.Printf("Enter feat branch: ")
+		fmt.Scanf("%s\n",&feat)
 
 		body := `
 ## Description
@@ -116,14 +114,14 @@ Fixes #[issue-number]
 		// Create a temporary file to store the PR body
 		file, err := os.CreateTemp("", "pr_body_*.md")
 		if err != nil {
-			fmt.Println("Error creating temporary file:", err)
+			fmt.Printf("Error creating temporary file:", err)
 			return
 		}
 		defer os.Remove(file.Name()) // Clean up the file after
 
 		_, err = file.WriteString(body)
 		if err != nil {
-			fmt.Println("Error writing to file:", err)
+			fmt.Printf("Error writing to file:", err)
 			return
 		}
 		file.Close()
@@ -135,7 +133,7 @@ Fixes #[issue-number]
 		gpErr := gp.Run()
 
 		if gpErr != nil {
-			fmt.Println("Error on PR creation:", gpErr)
+			fmt.Printf("Error on PR creation:", gpErr)
 			return
 		}
 	},
