@@ -22,40 +22,6 @@ var prCmd = &cobra.Command{
 			return
 		}
 		os.Chdir(cwd)
-		
-		gs := exec.Command("git", "status")
-		_,gsErr := gs.Output()
-		if gsErr != nil {
-			fmt.Printf("error",gsErr)
-			return
-		}
-
-		ga := exec.Command("git", "add", "-A")
-		_,gaErr := ga.Output()
-		if gaErr != nil {
-			fmt.Printf("error",gaErr)
-			return
-		}
-
-		var commitMsg string 
-		fmt.Printf("Enter commit message:\n")
-		fmt.Scanf("%s", &commitMsg)
-
-		gc := exec.Command("git", "commit", "-m", "'"+commitMsg+"'")
-		gc.Stderr = os.Stderr
-		gc.Stdout = os.Stdout
-		gcErr := gc.Run()
-		if gcErr != nil {
-			fmt.Printf("error",gcErr)
-			return
-		}
-
-		gpush := exec.Command("git", "push")
-		_,gpushErr := gpush.Output()
-		if gpushErr != nil {
-			fmt.Printf("error",gpushErr)
-			return
-		}
 
 		var title string
 		var base string
