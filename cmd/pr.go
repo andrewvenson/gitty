@@ -25,20 +25,19 @@ var prCmd = &cobra.Command{
 		os.Chdir(cwd)
 		
 		gs := exec.Command("git", "status")
-		gsOutput,gsErr := gs.Output()
+		_,gsErr := gs.Output()
 		if gsErr != nil {
 			fmt.Println("error",gsErr)
 		}
-		fmt.Println(string(gsOutput))
 
 		ga := exec.Command("git", "add", "-A")
-		gaOutput,gaErr := ga.Output()
+		_,gaErr := ga.Output()
 		if gaErr != nil {
 			fmt.Println("error",gaErr)
 		}
-		fmt.Println(string(gaOutput))
 
 		var commitMsg string 
+		fmt.Println("Enter commit message:")
 		fmt.Scanln(&commitMsg)
 
 		gc := exec.Command("git", "commit", "-m",commitMsg)
@@ -47,14 +46,24 @@ var prCmd = &cobra.Command{
 			fmt.Println("error",gcErr)
 		}
 		fmt.Println(string(gcOutput))
+
+		gpush := exec.Command("git", "push")
+		gpushOutput,gpushErr := gpush.Output()
+		if gpushErr != nil {
+			fmt.Println("error",gpushErr)
+		}
+		fmt.Println(string(gpushOutput))
 		
 		var title string 
+		fmt.Println("Enter pr title:")
 		fmt.Scanln(&title)
 
 		var base string 
+		fmt.Println("Enter base branch to pull pr into:")
 		fmt.Scanln(&base)
 
 		var feat string 
+		fmt.Println("Enter feat branch name to pull pr into:")
 		fmt.Scanln(&feat)
 
 		body := `
