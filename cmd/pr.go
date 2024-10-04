@@ -73,45 +73,45 @@ var prCmd = &cobra.Command{
 		fmt.Scanf("%s",&feat)
 
 		body := `
-		## Description
+## Description
 
-		<!-- Provide a short summary of the changes. Why are they necessary? -->
+<!-- Provide a short summary of the changes. Why are they necessary? -->
 
-		## Related Issue
+## Related Issue
 
-		<!-- If this PR is related to an open issue, link it here. -->
-		Fixes #[issue-number]
+<!-- If this PR is related to an open issue, link it here. -->
+Fixes #[issue-number]
 
-		## Type of Change
+## Type of Change
 
-		<!-- Please delete options that are not relevant. -->
-		- [ ] Bug fix (non-breaking change which fixes an issue)
-		- [ ] New feature (non-breaking change which adds functionality)
-		- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-		- [ ] Documentation update
-		- [ ] Refactor (code improvements with no change in functionality)
+<!-- Please delete options that are not relevant. -->
+- [ ] Bug fix (non-breaking change which fixes an issue)
+- [ ] New feature (non-breaking change which adds functionality)
+- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
+- [ ] Documentation update
+- [ ] Refactor (code improvements with no change in functionality)
 
-		## How Has This Been Tested?
+## How Has This Been Tested?
 
-		<!-- Describe the tests that you ran to verify your changes. Provide instructions so reviewers can reproduce. -->
-		- [ ] Unit Tests
-		- [ ] Integration Tests
-		- [ ] Manual Testing
+<!-- Describe the tests that you ran to verify your changes. Provide instructions so reviewers can reproduce. -->
+- [ ] Unit Tests
+- [ ] Integration Tests
+- [ ] Manual Testing
 
-		## Checklist:
+## Checklist:
 
-		- [ ] My code follows the style guidelines of this project
-		- [ ] I have performed a self-review of my code
-		- [ ] I have commented my code, particularly in hard-to-understand areas
-		- [ ] I have added necessary documentation (if applicable)
-		- [ ] My changes generate no new warnings
-		- [ ] I have added tests that prove my fix is effective or that my feature works
-		- [ ] New and existing unit tests pass locally with my changes
+- [ ] My code follows the style guidelines of this project
+- [ ] I have performed a self-review of my code
+- [ ] I have commented my code, particularly in hard-to-understand areas
+- [ ] I have added necessary documentation (if applicable)
+- [ ] My changes generate no new warnings
+- [ ] I have added tests that prove my fix is effective or that my feature works
+- [ ] New and existing unit tests pass locally with my changes
 
-		## Screenshots (if applicable)
+## Screenshots (if applicable)
 
-		<!-- If your PR includes visual changes, include screenshots here. -->
-	`
+<!-- If your PR includes visual changes, include screenshots here. -->
+`
 
 		// Create a temporary file to store the PR body
 		file, err := os.CreateTemp("", "pr_body_*.md")
