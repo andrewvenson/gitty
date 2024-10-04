@@ -3,6 +3,7 @@ package cmd
 import (
 	"os/exec"
 	"os"
+	"bufio"
 	"fmt"
 	"github.com/spf13/cobra"
 )
@@ -22,19 +23,21 @@ var prCmd = &cobra.Command{
 			return
 		}
 		os.Chdir(cwd)
+		
+		reader := bufio.NewReader(os.Stdin)
 
-		var title string
-		var base string
-		var feat string
+		fmt.Println("Enter pr title:")
+		title,_ := reader.ReadString('\n')
 
-		fmt.Printf("Enter pr title: ")
-		fmt.Scanf("%s\n",&title)
+		fmt.Println("Enter base branch to pull pr into:")
+		base,_ := reader.ReadString('\n')
 
-		fmt.Printf("Enter base branch to pull pr into: ")
-		fmt.Scanf("%s\n",&base)
-
-		fmt.Printf("Enter feat branch: ")
-		fmt.Scanf("%s\n",&feat)
+		featCmd := exec.Command("git", "branch","--show-current")
+		output,err := featCmd.Output()
+		if err != nil {
+			fmt.Println("error",err)
+		}
+		feat := "remotes/origin/"+string(output)
 
 		body := `
 ## Description
@@ -76,7 +79,6 @@ Fixes #[issue-number]
 
 <!-- If your PR includes visual changes, include screenshots here. -->
 `
-
 		// Create a temporary file to store the PR body
 		file, err := os.CreateTemp("", "pr_body_*.md")
 		if err != nil {
