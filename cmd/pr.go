@@ -109,7 +109,10 @@ var prCmd = &cobra.Command{
 	`
 
 		gp := exec.Command("gh", "pr", "create", "--base", base, "--head", feat, "--title", title, "--body", body)
-		gpOutput,_ := gp.Output()
+		gpOutput,gpErr := gp.Output()
+		if gpErr != nil {
+			fmt.Println("error", gpErr)
+		}
 		fmt.Println(string(gpOutput))
 	},
 }
