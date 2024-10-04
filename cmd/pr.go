@@ -19,6 +19,7 @@ var prCmd = &cobra.Command{
 		cwd,cwdErr := os.Getwd()
 		if cwdErr != nil {
 			fmt.Println("error", cwdErr)
+			return
 		}
 
 		fmt.Println(cwd)
@@ -28,22 +29,26 @@ var prCmd = &cobra.Command{
 		_,gsErr := gs.Output()
 		if gsErr != nil {
 			fmt.Println("error",gsErr)
+			return
 		}
 
 		ga := exec.Command("git", "add", "-A")
 		_,gaErr := ga.Output()
 		if gaErr != nil {
 			fmt.Println("error",gaErr)
+			return
 		}
 
 		var commitMsg string 
 		fmt.Println("Enter commit message:")
 		fmt.Scanln(&commitMsg)
+		fmt.Scanln("\n")
 
 		gc := exec.Command("git", "commit", "-m",commitMsg)
 		gcOutput,gcErr := gc.Output()
 		if gcErr != nil {
 			fmt.Println("error",gcErr)
+			return
 		}
 		fmt.Println(string(gcOutput))
 
@@ -51,6 +56,7 @@ var prCmd = &cobra.Command{
 		gpushOutput,gpushErr := gpush.Output()
 		if gpushErr != nil {
 			fmt.Println("error",gpushErr)
+			return
 		}
 		fmt.Println(string(gpushOutput))
 		
@@ -60,12 +66,15 @@ var prCmd = &cobra.Command{
 
 		fmt.Println("Enter pr title:")
 		fmt.Scanln(&title)
+		fmt.Scanln("\n")
 
 		fmt.Println("Enter base branch to pull pr into:")
 		fmt.Scanln(&base)
+		fmt.Scanln("\n")
 
 		fmt.Println("Enter feat branch name to pull pr into:")
 		fmt.Scanln(&feat)
+		fmt.Scanln("\n")
 
 		body := `
 		## Description
@@ -113,6 +122,7 @@ var prCmd = &cobra.Command{
 		if gpErr != nil {
 			fmt.Println("error on pr creation", gpErr)
 			fmt.Println("error on pr creation", gpOutput)
+			return
 		}
 		fmt.Println(string(gpOutput))
 	},
