@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/spf13/cobra"
+	"strings"
 )
 
 func init() {
@@ -28,9 +29,11 @@ var prCmd = &cobra.Command{
 
 		fmt.Println("Enter pr title:")
 		title,_ := reader.ReadString('\n')
+		title = strings.TrimSuffix(title,"\n")
 
 		fmt.Println("Enter base branch to pull pr into:")
 		base,_ := reader.ReadString('\n')
+		base = strings.TrimSuffix(base,"\n")
 
 		featCmd := exec.Command("git", "branch","--show-current")
 		output,err := featCmd.Output()
@@ -38,6 +41,7 @@ var prCmd = &cobra.Command{
 			fmt.Println("error",err)
 		}
 		feat := string(output)
+		feat = strings.TrimSuffix(feat, "\n")
 
 		body := `
 ## Description
@@ -93,6 +97,7 @@ Fixes #[issue-number]
 			return
 		}
 		file.Close()
+		fmt.Println(base,feat,title)
 
 		// Pass the body as a file to the gh command
 		gp := exec.Command("gh", "pr", "create", "--base", base, "--head", feat, "--title", title, "--body-file", file.Name())
