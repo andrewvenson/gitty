@@ -44,7 +44,9 @@ var prCmd = &cobra.Command{
 		fmt.Scanf("%s", &commitMsg)
 
 		gc := exec.Command("git", "commit", "-m", "'"+commitMsg+"'")
-		_,gcErr := gc.Output()
+		gc.Stderr = os.Stderr
+		gc.Stdout = os.Stdout
+		gcErr := gc.Run()
 		if gcErr != nil {
 			fmt.Println("error",gcErr)
 			return
