@@ -37,7 +37,7 @@ var prCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println("error",err)
 		}
-		feat := "remotes/origin/"+string(output)
+		feat := string(output)
 
 		body := `
 ## Description
