@@ -111,7 +111,8 @@ var prCmd = &cobra.Command{
 		gp := exec.Command("gh", "pr", "create", "--base", base, "--head", feat, "--title", title, "--body", body)
 		gpOutput,gpErr := gp.Output()
 		if gpErr != nil {
-			fmt.Println("error", gpErr)
+			fmt.Println("error on pr creation", gpErr)
+			fmt.Println("error on pr creation", gpOutput)
 		}
 		fmt.Println(string(gpOutput))
 	},
