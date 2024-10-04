@@ -41,7 +41,7 @@ var prCmd = &cobra.Command{
 
 		var commitMsg string 
 		fmt.Println("Enter commit message:")
-		fmt.Scanln(&commitMsg)
+		fmt.Scanf("%s",&commitMsg)
 
 		gc := exec.Command("git", "commit", "-m",commitMsg)
 		_,gcErr := gc.Output()
@@ -62,16 +62,13 @@ var prCmd = &cobra.Command{
 		var feat string 
 
 		fmt.Println("Enter pr title:")
-		fmt.Scanf("\n")
-		fmt.Scanln(&title)
+		fmt.Scanf("%s",&title)
 
 		fmt.Println("Enter base branch to pull pr into:")
-		fmt.Scanf("\n")
-		fmt.Scanln(&base)
+		fmt.Scanf("%s",&base)
 
 		fmt.Println("Enter feat branch name to pull pr into:")
-		fmt.Scanf("\n")
-		fmt.Scanln(&feat)
+		fmt.Scanf("%s",&feat)
 
 		body := `
 		## Description
