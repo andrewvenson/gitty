@@ -55,14 +55,15 @@ var prCmd = &cobra.Command{
 		fmt.Println(string(gpushOutput))
 		
 		var title string 
+		var base string 
+		var feat string 
+
 		fmt.Println("Enter pr title:")
 		fmt.Scanln(&title)
 
-		var base string 
 		fmt.Println("Enter base branch to pull pr into:")
 		fmt.Scanln(&base)
 
-		var feat string 
 		fmt.Println("Enter feat branch name to pull pr into:")
 		fmt.Scanln(&feat)
 
