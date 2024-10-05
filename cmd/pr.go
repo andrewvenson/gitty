@@ -34,7 +34,7 @@ func getBase(reader *bufio.Reader) (string, error) {
 	return strings.TrimSuffix(base,"\n"), nil
 }
 
-func getFeat(reader *bufio.Reader) (string, error) [ {
+func getFeat(reader *bufio.Reader) (string, error)  {
 	featCmd := exec.Command("git", "branch","--show-current")
 	output,err := featCmd.Output()
 	if err != nil {
