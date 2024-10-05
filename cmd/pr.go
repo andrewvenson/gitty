@@ -19,7 +19,7 @@ func getTitle(reader *bufio.Reader) (string, error) {
 	title,err := reader.ReadString('\n')
 	if err != nil {
 		fmt.Printf("Error reading input for title")
-		return "", err
+		return "", errors.New("error")
 	}
 	return strings.TrimSuffix(title,"\n"), nil
 }
@@ -29,7 +29,7 @@ func getBase(reader *bufio.Reader) (string, error) {
 	base,err := reader.ReadString('\n')
 	if err != nil {
 		fmt.Printf("Error reading input for base")
-		return "", err
+		return "", errors.New("error")
 	}
 	return strings.TrimSuffix(base,"\n"), nil
 }
@@ -39,31 +39,27 @@ func getFeat(reader *bufio.Reader) (string, error)  {
 	output,err := featCmd.Output()
 	if err != nil {
 		fmt.Printf("Error executing command for showing current branch")
-		return "", err
+		return "", errors.New("error")
 	}
 	feat := string(output)
 	return strings.TrimSuffix(feat, "\n"), nil
 }
 
-func createTempFile() (*os.file, error) {
+func createTempFile() (*os.File, error) {
 	file, err := os.CreateTemp("", "pr_body_*.md")
 	if err != nil {
 		fmt.Printf("Error creating temporary file:", err)
-		return nil, err
+		return nil, errors.New("error")
 	}
 	return file, nil
 }
 
-func writePrTemplateToTempFile() error {
+func writePrTemplateToTempFile(file *os.File) error {
 		body := `
 ## Description
 
 <!-- Provide a short summary of the changes. Why are they necessary? -->
-
-## Related Issue
-
-<!-- If this PR is related to an open issue, link it here. -->
-Fixes #[issue-number]
+...
 
 ## Type of Change
 
@@ -95,10 +91,10 @@ Fixes #[issue-number]
 
 <!-- If your PR includes visual changes, include screenshots here. -->
 `
-	_, err = file.WriteString(body)
+	_, err := file.WriteString(body)
 	if err != nil {
 		fmt.Printf("Error writing to file:", err)
-		return err
+		return errors.New("error")
 	}
 	file.Close()
 	return nil
@@ -112,9 +108,10 @@ func createPr(file *os.File, base string, feat string, title string) error {
 
 	if gpErr != nil {
 		fmt.Printf("Error on PR creation:", gpErr)
-		os.Remove(file.name)
-		return gpErr
+		os.Remove(file.Name())
+		return errors.New("error")
 	}
+	os.Remove(file.Name())
 	return nil
 }
 
@@ -122,7 +119,7 @@ func changeDir() error {
 	cwd,cwdErr := os.Getwd()
 	if cwdErr != nil {
 		fmt.Printf("error", cwdErr)
-		return cwdErr
+		return errors.New("error")
 	}
 	os.Chdir(cwd)
 	return nil
