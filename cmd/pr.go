@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"os/exec"
 	"os"
 	"bufio"
@@ -13,45 +14,52 @@ func init() {
 	rootCmd.AddCommand(prCmd)
 }
 
-var prCmd = &cobra.Command{
-	Use:   "pr",
-	Short: "Creates pull request",
-	Long: `Create a pull request with custom template`,
-	Run: func(cmd *cobra.Command, args []string){
-		cwd,cwdErr := os.Getwd()
-		if cwdErr != nil {
-			fmt.Printf("error", cwdErr)
-			return
-		}
-		os.Chdir(cwd)
-		
-		reader := bufio.NewReader(os.Stdin)
+func getTitle(reader *bufio.Reader) (string, error) {
+	fmt.Println("Enter pr title:")
+	title,err := reader.ReadString('\n')
+	if err != nil {
+		fmt.Printf("Error reading input for title")
+		return "", errors.New("error")
+	}
+	return strings.TrimSuffix(title,"\n"), nil
+}
 
-		fmt.Println("Enter pr title:")
-		title,_ := reader.ReadString('\n')
-		title = strings.TrimSuffix(title,"\n")
+func getBase(reader *bufio.Reader) (string, error) {
+	fmt.Println("Enter base branch to pull pr into:")
+	base,err := reader.ReadString('\n')
+	if err != nil {
+		fmt.Printf("Error reading input for base")
+		return "", errors.New("error")
+	}
+	return strings.TrimSuffix(base,"\n"), nil
+}
 
-		fmt.Println("Enter base branch to pull pr into:")
-		base,_ := reader.ReadString('\n')
-		base = strings.TrimSuffix(base,"\n")
+func getFeat(reader *bufio.Reader) (string, error)  {
+	featCmd := exec.Command("git", "branch","--show-current")
+	output,err := featCmd.Output()
+	if err != nil {
+		fmt.Printf("Error executing command for showing current branch")
+		return "", errors.New("error")
+	}
+	feat := string(output)
+	return strings.TrimSuffix(feat, "\n"), nil
+}
 
-		featCmd := exec.Command("git", "branch","--show-current")
-		output,err := featCmd.Output()
-		if err != nil {
-			fmt.Println("error",err)
-		}
-		feat := string(output)
-		feat = strings.TrimSuffix(feat, "\n")
+func createTempFile() (*os.File, error) {
+	file, err := os.CreateTemp("", "pr_body_*.md")
+	if err != nil {
+		fmt.Printf("Error creating temporary file:", err)
+		return nil, errors.New("error")
+	}
+	return file, nil
+}
 
+func writePrTemplateToTempFile(file *os.File) error {
 		body := `
 ## Description
 
 <!-- Provide a short summary of the changes. Why are they necessary? -->
-
-## Related Issue
-
-<!-- If this PR is related to an open issue, link it here. -->
-Fixes #[issue-number]
+...
 
 ## Type of Change
 
@@ -83,30 +91,79 @@ Fixes #[issue-number]
 
 <!-- If your PR includes visual changes, include screenshots here. -->
 `
-		// Create a temporary file to store the PR body
-		file, err := os.CreateTemp("", "pr_body_*.md")
-		if err != nil {
-			fmt.Printf("Error creating temporary file:", err)
+	_, err := file.WriteString(body)
+	if err != nil {
+		fmt.Printf("Error writing to file:", err)
+		return errors.New("error")
+	}
+	file.Close()
+	return nil
+}
+
+func createPr(file *os.File, base string, feat string, title string) error {
+	gp := exec.Command("gh", "pr", "create", "--base", base, "--head", feat, "--title", title, "--body-file", file.Name())
+	gp.Stderr = os.Stderr
+	gp.Stdout = os.Stdout
+	gpErr := gp.Run()
+
+	if gpErr != nil {
+		fmt.Printf("Error on PR creation:", gpErr)
+		os.Remove(file.Name())
+		return errors.New("error")
+	}
+	os.Remove(file.Name())
+	return nil
+}
+
+func changeDir() error {
+	cwd,cwdErr := os.Getwd()
+	if cwdErr != nil {
+		fmt.Printf("error", cwdErr)
+		return errors.New("error")
+	}
+	os.Chdir(cwd)
+	return nil
+}
+
+var prCmd = &cobra.Command{
+	Use:   "pr",
+	Short: "Creates pull request",
+	Long: `Create a pull request with custom template`,
+	Run: func(cmd *cobra.Command, args []string){
+		changeDirErr := changeDir()
+		if changeDirErr != nil {
 			return
 		}
-		defer os.Remove(file.Name()) // Clean up the file after
+		
+		reader := bufio.NewReader(os.Stdin)
 
-		_, err = file.WriteString(body)
-		if err != nil {
-			fmt.Printf("Error writing to file:", err)
+		title,titleErr := getTitle(reader)
+		if titleErr != nil {
 			return
 		}
-		file.Close()
-		fmt.Println(base,feat,title)
 
-		// Pass the body as a file to the gh command
-		gp := exec.Command("gh", "pr", "create", "--base", base, "--head", feat, "--title", title, "--body-file", file.Name())
-		gp.Stderr = os.Stderr
-		gp.Stdout = os.Stdout
-		gpErr := gp.Run()
+		base,baseErr := getBase(reader)
+		if baseErr != nil {
+			return
+		}
 
-		if gpErr != nil {
-			fmt.Printf("Error on PR creation:", gpErr)
+		feat,featErr := getFeat(reader)
+		if featErr != nil {
+			return
+		}
+		
+		file,fileErr := createTempFile()
+		if fileErr != nil {
+			return
+		}
+
+		writeErr := writePrTemplateToTempFile(file)
+		if writeErr != nil {
+			return
+		}
+		
+		createPrErr := createPr(file,base,feat,title)
+		if createPrErr != nil {
 			return
 		}
 	},
